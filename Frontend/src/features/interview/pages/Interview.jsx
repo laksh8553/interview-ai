@@ -59,7 +59,7 @@ const RoadMapDay = ({ day }) => (
 // ── Main Component ────────────────────────────────────────────────────────────
 const Interview = () => {
     const [ activeNav, setActiveNav ] = useState('technical')
-    const {report,getReportById,loading}=useInterview()
+    const {report,getReportById,loading,getResumePdf}=useInterview()
     const {interviewId} =useParams()
 
     useEffect(() => {
