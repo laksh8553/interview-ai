@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import '../style/interview.scss'
-import { useNavigate, useParams } from 'react-router'
+import { useNavigate,useParams } from 'react-router'
+import { useInterview } from '../hooks/useInterview'
 
 
 
@@ -58,7 +59,8 @@ const RoadMapDay = ({ day }) => (
 // ── Main Component ────────────────────────────────────────────────────────────
 const Interview = () => {
     const [ activeNav, setActiveNav ] = useState('technical')
-    const { interviewId } = useParams()
+    const {report,getReportById,loading}=useInterview()
+    const {interviewId} =useParams()
 
     useEffect(() => {
         if (interviewId) {
@@ -66,8 +68,18 @@ const Interview = () => {
         }
     }, [ interviewId ])
 
+    if (loading || !report) {
+        return (
+            <main className='loading-screen'>
+                <h1>Loading your interview plan...</h1>
+            </main>
+        )
+    }
 
 
+    const scoreColor =
+        report.matchScore >= 80 ? 'score--high' :
+            report.matchScore >= 60 ? 'score--mid' : 'score--low'
 
 
 
@@ -106,10 +118,12 @@ const Interview = () => {
                         <section>
                             <div className='content-header'>
                                 <h2>Technical Questions</h2>
-                                <span className='content-header__count'> questions</span>
+                                <span className='content-header__count'>{report.technicalQuestions.length} questions</span>
                             </div>
                             <div className='q-list'>
-                             
+                                {report.technicalQuestions.map((item, i) => (
+                                <QuestionCard key={i} item={item} index={i} />
+                              ))}
                             </div>
                         </section>
                     )}
@@ -118,10 +132,12 @@ const Interview = () => {
                         <section>
                             <div className='content-header'>
                                 <h2>Behavioral Questions</h2>
-                                <span className='content-header__count'> questions</span>
+                                <span className='content-header__count'>{report.behavioralQuestions.length} questions</span>
                             </div>
                             <div className='q-list'>
-                                
+                                {report.behavioralQuestions.map((item, i) => (
+                                    <QuestionCard key={i} item={item} index={i} />
+                                ))}
                             </div>
                         </section>
                     )}
@@ -130,10 +146,12 @@ const Interview = () => {
                         <section>
                             <div className='content-header'>
                                 <h2>Preparation Road Map</h2>
-                                <span className='content-header__count'>-day plan</span>
+                                <span className='content-header__count'>{report.preparationPlan.length}-day plan</span>
                             </div>
                             <div className='roadmap-list'>
-                                
+                                {report.preparationPlan.map((day, i) => (
+                                  <RoadMapDay key={i} day={day} />
+                                ))}
                             </div>
                         </section>
                     )}
@@ -148,7 +166,7 @@ const Interview = () => {
                     <div className='match-score'>
                         <p className='match-score__label'>Match Score</p>
                         <div className={`match-score__ring `}>
-                            <span className='match-score__value'></span>
+                            <span className='match-score__value'>{report.matchScore}</span>
                             <span className='match-score__pct'>%</span>
                         </div>
                         <p className='match-score__sub'>Strong match for this role</p>
@@ -160,7 +178,11 @@ const Interview = () => {
                     <div className='skill-gaps'>
                         <p className='skill-gaps__label'>Skill Gaps</p>
                         <div className='skill-gaps__list'>
-                            
+                            {(report.skillGaps || []).map((gap, i) => (
+                              <span key={i} className='skill-gap__tag'>
+                                 {gap.skill}
+                              </span>
+                            ))}
                         </div>
                     </div>
 

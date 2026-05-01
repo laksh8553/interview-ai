@@ -64,4 +64,4 @@ async function getAllInterviewReportsController(req, res) {
     })
 }
 
-module.exports = { generateInterViewReportController,getInterviewReportByIdController };
+module.exports = { generateInterViewReportController,getInterviewReportByIdController,getAllInterviewReportsController };
